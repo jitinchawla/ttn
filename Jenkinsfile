@@ -1,4 +1,4 @@
-node(slave1) {
+node {
     stage('Checkout') {
     	checkout([$class: 'GitSCM', branches: [[name: '*/$BRANCH']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'b0236129-b8f4-4e21-8827-3083abafa57b', url: 'https://github.com/jitinchawla/ttn.git']]])
     }
