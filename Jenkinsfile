@@ -7,9 +7,12 @@ node {
     	sh 'mvn clean install'
     }
 
-	stage('Build and Push Docker Image') {
-		withDockerRegistry(credentialsId: 'b0236129-b8f4-4e21-8827-3083abafa57b', toolName: 'myDocker', url: 'https://hub.docker.com') {
- 		sh 'docker build -t jitinchawla/application:${BUILD_NUMBER} ; docker push jitinchawla/application:${BUILD_NUMBER}'
+	stage('Build Docker Image'){
+		sh 'docker build -t jitinchawla/application:${BUILD_NUMBER}
+	}
+	stage('Push Docker Image') {
+		withDockerRegistry(credentialsId: 'b0236129-b8f4-4e21-8827-3083abafa57b', toolName: 'Docker', url: 'https://hub.docker.com') {
+ 		docker push jitinchawla/application:${BUILD_NUMBER}'
 	}
 	}
 
