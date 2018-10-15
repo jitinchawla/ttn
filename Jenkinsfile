@@ -8,15 +8,17 @@ node {
     }
 
 	stage('Build Docker Image'){
-		sh 'docker build -t jitinchawla/application:${env.BUILD_NUMBER} .'
+		docker.withServer('tcp://127.0.0.1:2375'){
+		docker.build("jitinchawla/application:${BUILD_NUMBER}")
+	}
 	}
 	stage('Push Docker Image') {
-		withDockerRegistry(credentialsId: 'b0236129-b8f4-4e21-8827-3083abafa57b', toolName: 'Docker', url: 'https://hub.docker.com') {
- 		sh 'docker push jitinchawla/application:${env.BUILD_NUMBER}'
-	}
-	}
+	    docker.withServer('tcp://127.0.0.1:2375'){
+		docker.withRegistry('https://hub.docker.com', 'b0236129-b8f4-4e21-8827-3083abafa57b') {
+ 		docker.push("jitinchawla/application:${BUILD_NUMBER}")
+	}	}	}
 
 	stage('Deploy'){
-		sshPublisher(publishers: [sshPublisherDesc(configName: 'docker', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'docker run -itd -P jitinchawla/application:${env.BUILD_NUMBER}', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+		sshPublisher(publishers: [sshPublisherDesc(configName: 'docker', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'docker run -itd -P jitinchawla/application:${BUILD_NUMBER}', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
 	}
 }
