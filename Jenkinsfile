@@ -14,8 +14,9 @@ node {
 	}
 	stage('Push Docker Image') {
 	    docker.withServer('tcp://127.0.0.1:2375'){
-		docker.withRegistry('https://hub.docker.com', 'b0236129-b8f4-4e21-8827-3083abafa57b') {
- 		docker.push("jitinchawla/application:${BUILD_NUMBER}")
+	    withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'b0236129-b8f4-4e21-8827-3083abafa57b',
+usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]){
+		sh 'docker login -u $USERNAME -p $PASSWORD ; docker push jitinchawla/application:${BUILD_NUMBER}'
 	}	}	}
 
 	stage('Deploy'){
